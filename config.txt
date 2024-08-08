@@ -2,6 +2,8 @@
 
 [profile paocloud-sso]
 role_arn = arn:aws:iam::420813127999:role/allowPAOCLOUDSSM  ##Role ที่ใช้ในการ Access Account ปลายทาง
+sso_region = ap-southeast-1
+sso_start_url = https://mycompany.awsapps.com/start
 region = ap-southeast-1 ##Region ที่ต้องการใช้
 output = json
 source_profile = payungsakpk ##กำหนด Source Profile ที่เปิดใช้ SSO ไว้
