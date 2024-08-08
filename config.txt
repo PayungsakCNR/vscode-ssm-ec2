@@ -1,0 +1,45 @@
+##AWS CLI CONFIG
+
+[profile paocloud-sso]
+role_arn = arn:aws:iam::420813127999:role/allowPAOCLOUDSSM  ##Role ที่ใช้ในการ Access Account ปลายทาง
+region = ap-southeast-1 ##Region ที่ต้องการใช้
+output = json
+source_profile = payungsakpk ##กำหนด Source Profile ที่เปิดใช้ SSO ไว้
+
+[profile payungsakpk]
+sso_start_url = https://mycompany.awsapps.com/start ## URL ของ AWS Identity Center
+sso_region = ap-southeast-1
+sso_account_id = 921418220555 ## AWS Account ID ของ Account ที่เปิด AWS Identity Center
+sso_role_name = AdministratorAccess ## Role ที่ใช้ในการ Access
+region = ap-southeast-1
+output = json
+
+
+##SSH CONFIG
+
+##My-EC2-Server
+Host i-0bf9e63825be9cd9b ##ใส่เป็น AWS EC2 Instance ID
+  User ubuntu ##User ที่เคยใช้ในการ SSH
+  ProxyCommand sh -c "aws sso login --profile paocloud-sso; 
+  export AWS_PROFILE=paocloud-sso; export AWS_REGION=ap-southeast-1; 
+  aws ssm start-session --target %h --document-name AWS-StartSSHSession 
+  --parameters 'portNumber=%p'" ##ตรง %p หากไม่ได้ใช้ Port 22 แก้เลข Port ด้วยให้ตรงกับที่ใช้
+
+### IAM Role Trust Relationship ของ Role ที่ใช้ Access Account ปลายทาง
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:sts::921418220555:assumed-role/AWSReservedSSO_AdministratorAccess_e5155b999caaaa/payungsak.k@paocloud.co.th"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+
+## Policy ของ Role ที่ใช้ Access Account ปลายทาง
+- สามารถใช้ AmazonSSMFullAccess หรือ Policy อืิ่นๆ ตามที่ต้องการเปิดใช้
+
+
